@@ -1,32 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'bmi_result_page.dart';
 
 class BmiCallPage extends StatefulWidget {
-  const BmiCallPage({super.key});
+  const BmiCallPage({Key? key}) : super(key: key);
 
   @override
   State<BmiCallPage> createState() => _BmiCallPageState();
 }
 
 class _BmiCallPageState extends State<BmiCallPage> {
-  double _height = 150.0;
-  bool _isMaleSelected = true;
+  var _height = 150.0;
+  var _isMaleSelected = true;
+  var _weight = 60;
+  var _age = 26;
 
   void _toggleGenderSelection(bool isMale) {
     setState(() {
       _isMaleSelected = isMale;
-      }
-    );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('BMI Calculator'),
+        title:   const Text(
+            'BMI Calculator',
+        ),
       ),
-      bottomNavigationBar: SizedBox(
+      bottomNavigationBar:
+      SizedBox(
         height: 100,
-        child: FilledButton(onPressed: () {}, child: const Text('Calculate')),
+        child: ElevatedButton(
+          style: ButtonStyle(),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BMIResultPage(
+                  height: _height,
+                  weight: _weight,
+                  age: _age,
+                  isMaleSelected: _isMaleSelected,
+                ),
+              ),
+            );
+          },
+          child: const Text(
+              'Calculate',
+
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 21, vertical: 21),
@@ -94,7 +119,6 @@ class _BmiCallPageState extends State<BmiCallPage> {
                               ),
                             ),
                             const SizedBox(width: 4),
-
                             const Text(
                               'cm',
                               style: TextStyle(
@@ -122,10 +146,10 @@ class _BmiCallPageState extends State<BmiCallPage> {
                 ),
               ),
             ),
-            const Expanded(
+            Expanded(
               flex: 1,
               child: Padding(
-                padding: EdgeInsets.only(top: 10),
+                padding: const EdgeInsets.only(top: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -133,22 +157,52 @@ class _BmiCallPageState extends State<BmiCallPage> {
                       flex: 1,
                       child: ChoseDetailsWidget(
                         title: 'Weight',
+                        value: _weight,
+                        increment: _incrementWeight,
+                        decrement: _decrementWeight,
                       ),
                     ),
                     Expanded(
                       flex: 1,
                       child: ChoseDetailsWidget(
                         title: 'Age',
+                        value: _age,
+                        increment: _incrementAge,
+                        decrement: _decrementAge,
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
     );
+  }
+
+  void _incrementWeight() {
+    setState(() {
+      _weight++;
+    });
+  }
+
+  void _decrementWeight() {
+    setState(() {
+      if (_weight > 0) _weight--;
+    });
+  }
+
+  void _incrementAge() {
+    setState(() {
+      _age++;
+    });
+  }
+
+  void _decrementAge() {
+    setState(() {
+      if (_age > 0) _age--;
+    });
   }
 }
 
@@ -159,12 +213,12 @@ class SelectGenderWidget extends StatelessWidget {
   final VoidCallback onTap;
 
   const SelectGenderWidget({
-    super.key,
+    Key? key,
     required this.title,
     required this.icon,
     required this.isSelected,
     required this.onTap,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -203,32 +257,19 @@ class SelectGenderWidget extends StatelessWidget {
   }
 }
 
-class ChoseDetailsWidget extends StatefulWidget {
+class ChoseDetailsWidget extends StatelessWidget {
   final String title;
+  final int value;
+  final VoidCallback increment;
+  final VoidCallback decrement;
 
   const ChoseDetailsWidget({
-    super.key,
+    Key? key,
     required this.title,
-  });
-
-  @override
-  _ChoseDetailsWidgetState createState() => _ChoseDetailsWidgetState();
-}
-
-class _ChoseDetailsWidgetState extends State<ChoseDetailsWidget> {
-  int _value = 60;
-
-  void _incrementValue() {
-    setState(() {
-      _value++;
-    });
-  }
-
-  void _decrementValue() {
-    setState(() {
-      if (_value > 0) _value--;
-    });
-  }
+    required this.value,
+    required this.increment,
+    required this.decrement,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -241,7 +282,7 @@ class _ChoseDetailsWidgetState extends State<ChoseDetailsWidget> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                widget.title,
+                title,
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w300,
@@ -249,7 +290,7 @@ class _ChoseDetailsWidgetState extends State<ChoseDetailsWidget> {
                 ),
               ),
               Text(
-                '$_value',
+                '$value',
                 style: const TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.w700,
@@ -260,17 +301,17 @@ class _ChoseDetailsWidgetState extends State<ChoseDetailsWidget> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(right: 15,top:15),
+                    padding: const EdgeInsets.only(right: 15, top: 15),
                     child: IconButton(
-                      onPressed: _decrementValue,
+                      onPressed: decrement,
                       icon: const Icon(Icons.remove_circle),
                       iconSize: 45,
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left:15,top: 15),
+                    padding: const EdgeInsets.only(left: 15, top: 15),
                     child: IconButton(
-                      onPressed: _incrementValue,
+                      onPressed: increment,
                       icon: const Icon(Icons.add_circle),
                       iconSize: 45,
                     ),
